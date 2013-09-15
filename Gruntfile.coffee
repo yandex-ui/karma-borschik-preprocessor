@@ -11,7 +11,7 @@ module.exports = (grunt) ->
       options:
         jshintrc: '.jshintrc'
       all:
-        src: ['*.js', '<%= nodeunit.files %>']
+        src: ['*.js', 'lib/*.js', '<%= nodeunit.files %>']
 
     pkgFile: 'package.json'
 
@@ -28,10 +28,10 @@ module.exports = (grunt) ->
       options:
         checkTravisBuild: true
 
-      watch:
-        all:
-          files: '<%= jshint.all.src %>',
-          tasks: ['jshint', 'nodeunit']
+    watch:
+      all:
+        files: '<%= jshint.all.src %>',
+        tasks: ['jshint', 'nodeunit']
 
   grunt.registerTask 'release', 'Bump the version and publish to NPM.', (type) ->
     grunt.task.run [
