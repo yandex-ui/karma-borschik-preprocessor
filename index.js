@@ -1,19 +1,5 @@
 var borschik = require('borschik');
-var stream = require('stream');
-
-var WritableStream = function() {
-    var writer = new stream.Stream();
-    writer.write = function(chunk) {
-        this.emit('data', chunk);
-    };
-    writer.end = function(chunk) {
-        if (chunk) {
-            this.emit('data', chunk);
-        }
-        this.emit('end');
-    };
-    return writer;
-};
+var stream = require('./lib/stream');
 
 var createBorschikPreprocessor = function(args, config, logger, helper) {
     config = config || {};
@@ -27,7 +13,7 @@ var createBorschikPreprocessor = function(args, config, logger, helper) {
     var options = helper.merge(defaultOptions, args.options || {}, config.options || {});
 
     return function(content, file, done) {
-        var output = new WritableStream();
+        var output = new stream.Writable();
         var result = null;
         var onError = function(errorObject) {
             log.error('%s\n  at %s', errorObject.message, file.originalPath);
