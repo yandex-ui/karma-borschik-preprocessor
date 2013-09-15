@@ -1,5 +1,7 @@
 # karma-borschik-preprocessor
 
+[![Build Status](https://travis-ci.org/maksimr/karma-borschik-preprocessor.png?branch=master)](https://travis-ci.org/maksimr/karma-borschik-preprocessor) [![Build Status](https://drone.io/github.com/maksimr/karma-borschik-preprocessor/status.png)](https://drone.io/github.com/maksimr/karma-borschik-preprocessor/latest)
+
 > Preprocessor to build JavaScript files through [borschik](https://github.com/bem/borschik) on the fly.
 
 ## Installation
