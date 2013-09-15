@@ -22,7 +22,6 @@ module.exports = (grunt) ->
     bump:
       options:
         commitMessage: 'chore: release v%VERSION%'
-        pushTo: 'upstream'
 
     'auto-release':
       options:
