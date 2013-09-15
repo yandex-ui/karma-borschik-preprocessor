@@ -16,7 +16,10 @@
     "borschik",
     "builder"
   ],
-  "author": "Maksim Ryzshikov <rv.maksim@yandex.ru>",
+  "author": {
+    "name": "Maksim Ryzhikov",
+    "email": "rv.maksim@yandex.ru"
+  },
   "dependencies": {
     "borschik": "~0.3.5"
   },
