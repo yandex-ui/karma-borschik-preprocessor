@@ -21,7 +21,7 @@
     "email": "rv.maksim@yandex.ru"
   },
   "dependencies": {
-    "borschik": "~0.3.5"
+    "borschik": "0.4.x"
   },
   "peerDependencies": {
     "karma": ">=0.9"
