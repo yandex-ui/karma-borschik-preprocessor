@@ -37,7 +37,6 @@
     "matchdep": "~0.1.2",
     "grunt-cli": "~0.1.9",
     "grunt": "~0.4.1",
-
     "grunt-simple-mocha": "~0.4",
     "mocha": "~1.8",
     "mocks": "~0.0.10",
