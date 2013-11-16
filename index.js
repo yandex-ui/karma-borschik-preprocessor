@@ -1,5 +1,6 @@
 var borschik = require('borschik');
 var stream = require('./lib/stream');
+var watcher = require('./lib/watcher');
 
 var createBorschikPreprocessor = function(args, config, logger, helper) {
     config = config || {};
@@ -11,6 +12,7 @@ var createBorschikPreprocessor = function(args, config, logger, helper) {
         'tech': 'js'
     };
     var options = helper.merge(defaultOptions, args.options || {}, config.options || {});
+    var watchers = {};
 
     return function(content, file, done) {
         var output = new stream.Writable();
@@ -34,6 +36,12 @@ var createBorschikPreprocessor = function(args, config, logger, helper) {
         } catch (e) {
             onError(e);
             return;
+        }
+
+        //TODO(maksimrv): Improve realization
+        if (!watchers[file.originalPath]) {
+            log.debug('Watch file', file.originalPath);
+            watchers[file.originalPath] = watcher.watch(file.originalPath, content);
         }
     };
 };

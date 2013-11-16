@@ -21,7 +21,8 @@
     "email": "rv.maksim@yandex.ru"
   },
   "dependencies": {
-    "borschik": "0.4.x"
+    "borschik": "0.4.x",
+    "chokidar": "~0.6"
   },
   "peerDependencies": {
     "karma": ">=0.9"
@@ -29,14 +30,21 @@
   "license": "MIT",
   "devDependencies": {
     "grunt-contrib-jshint": "~0.6.0",
-    "grunt-contrib-nodeunit": "~0.2.0",
     "grunt-contrib-watch": "~0.4.0",
     "grunt-npm": "~0.0.2",
     "grunt-bump": "~0.0.7",
     "grunt-auto-release": "~0.0.2",
     "matchdep": "~0.1.2",
     "grunt-cli": "~0.1.9",
-    "grunt": "~0.4.1"
+    "grunt": "~0.4.1",
+
+    "grunt-simple-mocha": "~0.4",
+    "mocha": "~1.8",
+    "mocks": "~0.0.10",
+    "sinon-chai": "~2.3",
+    "sinon": "~1.6",
+    "chai": "~1.5",
+    "chai-as-promised": "~3.2"
   },
   "contributors": []
 }

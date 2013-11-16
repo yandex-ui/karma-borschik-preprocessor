@@ -4,14 +4,21 @@ module.exports = (grunt) ->
 
   # Project configuration.
   grunt.initConfig
-    nodeunit:
-      files: ['test/**/*_test.js']
+    simplemocha:
+      options:
+        ui: 'bdd',
+        reporter: 'dot'
+      unit:
+        src: [
+          'test/unit/mocha-globals.coffee',
+          'test/unit/**/*.coffee'
+        ]
 
     jshint:
       options:
         jshintrc: '.jshintrc'
       all:
-        src: ['*.js', 'lib/*.js', '<%= nodeunit.files %>']
+        src: ['*.js', 'lib/*.js']
 
     pkgFile: 'package.json'
 
@@ -30,8 +37,8 @@ module.exports = (grunt) ->
 
     watch:
       all:
-        files: '<%= jshint.all.src %>',
-        tasks: ['jshint', 'nodeunit']
+        files: ['<%= jshint.all.src %>', '<%= simplemocha.unit.src %>']
+        tasks: ['jshint', 'simplemocha:unit']
 
   grunt.registerTask 'release', 'Bump the version and publish to NPM.', (type) ->
     grunt.task.run [
@@ -40,5 +47,5 @@ module.exports = (grunt) ->
       'npm-publish'
     ]
 
-  grunt.registerTask 'test', ['nodeunit']
-  grunt.registerTask 'default', ['jshint', 'nodeunit']
+  grunt.registerTask 'test', ['simplemocha:unit']
+  grunt.registerTask 'default', ['jshint', 'simplemocha:unit']
