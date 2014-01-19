@@ -1,5 +1,5 @@
 /*jshint unused:false*/
 
 function a(item) {
-    return item;
+    return item * item;
 }
