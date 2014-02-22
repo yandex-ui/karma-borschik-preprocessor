@@ -17,9 +17,6 @@ var createBorschikPreprocessor = function(args, config, logger, helper) {
     return function(content, file, done) {
         var output = new stream.Writable();
         var result = null;
-        var onError = function(errorObject) {
-            log.error('%s\n  at %s', errorObject.message, file.originalPath);
-        };
 
         log.debug('Processing "%s".', file.originalPath);
 
@@ -31,12 +28,9 @@ var createBorschikPreprocessor = function(args, config, logger, helper) {
             done(data);
         });
 
-        try {
-            result = borschik.api(opts).fail(onError);
-        } catch (e) {
-            onError(e);
-            return;
-        }
+        result = borschik.api(opts).fail(function(Error) {
+            throw Error;
+        });
 
         //TODO(maksimrv): Improve realization
         if (!watchers[file.originalPath]) {

@@ -1,23 +1,45 @@
-var fs = require("fs");
-var path = require("path");
-var fake = require("../fake.js");
-var createBorschikPreprocessor = require("../../index.js")['preprocessor:borschik'][1]
-
+var fake = require('../fake.js');
 
 describe('index', function() {
-    it('it should process file with borschik include', function(done) {
-        var borschik = createBorschikPreprocessor({}, null, new fake.Logger(), new fake.Helper());
-        var file = {
-            originalPath: path.resolve(__dirname, '../fixtures/index.js')
+    var mocks = require('mocks');
+    var mockery = require('mockery');
+    var fsMock, watcherMock;
+
+    beforeEach(function() {
+        mockery.enable({
+            warnOnUnregistered: false
+        });
+
+        fsMock = mocks.fs.create({
+            folder: {
+                'main.js': mocks.fs.file('2012-04-04', '/*borschik:include:depA.js*/'),
+                'depA.js': mocks.fs.file('2012-05-05', 'console.log("Hello World!");')
+            }
+        });
+
+        watcherMock = {
+            watch: function() {}
         };
 
-        var content = fs.readFileSync(file.originalPath, 'utf8');
+        mockery.registerMock('fs', fsMock);
+        mockery.registerMock('./lib/watcher', watcherMock);
 
-        var _done = function(data) {
-            expect(data).to.be.equal('console.log("Car.js");\n\n');
+        this.createBorschikPreprocessor = require('../../index.js')['preprocessor:borschik'].pop();
+    });
+
+    afterEach(function() {
+        mockery.disable();
+    });
+
+    it('it should process file with borschik include', function(done) {
+        var borschik = this.createBorschikPreprocessor({}, null, new fake.Logger(), new fake.Helper());
+        var file = {
+            originalPath: '/folder/main.js'
+        };
+
+        borschik(fsMock.readFileSync('/folder/main.js'), file, function(data) {
+            expect(data).to.be.equal('console.log("Hello World!");');
             done();
-        }
-
-        borschik(content, file, _done);
+        });
     });
 });
