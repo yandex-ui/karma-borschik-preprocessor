@@ -10,8 +10,8 @@ module.exports = (grunt) ->
         reporter: 'dot'
       unit:
         src: [
-          'test/unit/mocha-globals.coffee',
-          'test/unit/**/*.coffee'
+          'test/unit/mocha-globals.js',
+          'test/unit/**/*.js'
         ]
 
     jshint:
