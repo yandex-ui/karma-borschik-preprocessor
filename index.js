@@ -28,7 +28,7 @@ var createBorschikPreprocessor = function(args, config, logger, helper, basePath
 
         output.on('data', function(data) {
             var filePath = path.relative(basePath, file.originalPath, path.dirname(file.originalPath));
-            var sourceMap = JSON.parse(borschikSourceMap.generateSourceMap(filePath, data));
+            var sourceMap = borschikSourceMap.generateSourceMap(filePath, data);
 
             sourceMap.file = path.basename(file.path);
             file.sourceMap = sourceMap;

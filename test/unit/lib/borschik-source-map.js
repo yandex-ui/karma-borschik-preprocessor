@@ -17,7 +17,9 @@ describe('borschik-source-map', function() {
                 'console.log("start");',
                 '/* foo/bar.js begin */',
                 'console.log("Hello World");',
+                '',
                 '/* foo/bar.js end */',
+                '',
                 'console.log("end");',
             ].join('\n');
 
@@ -40,9 +42,13 @@ describe('borschik-source-map', function() {
                 'console.log("bar:Hello World");',
                 '/* foo/zoo.js begin */',
                 'console.log("zoo:Hello World");',
+                '',
                 '/* foo/zoo.js end */',
+                '',
                 'console.log("bar:Hello World");',
+                '',
                 '/* foo/bar.js end */',
+                '',
                 'console.log("end");',
             ].join('\n');
 
@@ -52,9 +58,10 @@ describe('borschik-source-map', function() {
                 fileName: 'foo/bar.js',
                 position: {
                     line: [
+                        [3, 1], // start include
                         [2, 0],
-                        [3, 1],
-                        [6, 2]
+                        [7, 1], // end include
+                        [8, 2]
                     ]
                 }
             }, {
@@ -74,13 +81,21 @@ describe('borschik-source-map', function() {
                 'console.log("start");',
                 '/* foo/bar.js begin */',
                 'console.log("Hello World");',
+                '',
                 '/* foo/bar.js end */',
-                'console.log("end");',
+                '',
+                'console.log("end");'
             ].join('\n');
 
             var result = this.borschikSourceMap.generateSourceMap('main-builded.js', content);
 
-            expect(result).to.be.equal("{\"version\":3,\"file\":\"main-builded.js\",\"sources\":[\"foo/bar.js\"],\"names\":[],\"mappings\":\";AAAA\"}");
+            expect(result).to.be.eql({
+                "version": 3,
+                "file": "main-builded.js",
+                "sources": ["foo/bar.js"],
+                "names": [],
+                "mappings": ";;AAAA"
+            });
         });
 
         it('should generate source map for nested dependencies', function() {
@@ -90,15 +105,25 @@ describe('borschik-source-map', function() {
                 'console.log("bar:Hello World");',
                 '/* foo/zoo.js begin */',
                 'console.log("zoo:Hello World");',
+                '',
                 '/* foo/zoo.js end */',
+                '',
                 'console.log("bar:Hello World");',
+                '',
                 '/* foo/bar.js end */',
+                '',
                 'console.log("end");',
             ].join('\n');
 
             var result = this.borschikSourceMap.generateSourceMap('main-builded.js', content);
 
-            expect(result).to.be.equal("{\"version\":3,\"file\":\"main-builded.js\",\"sources\":[\"foo/bar.js\",\"foo/zoo.js\"],\"names\":[],\"mappings\":\";AAAA;AAAA;ACAA;;ADCA\"}");
+            expect(result).to.be.eql({
+                "version": 3,
+                "file": "main-builded.js",
+                "sources": ["foo/bar.js", "foo/zoo.js"],
+                "names": [],
+                "mappings": ";;AAAA;AACA;ACDA;;;ADCA;AACA"
+            });
         });
     });
 });
