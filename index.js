@@ -1,12 +1,14 @@
 var borschik = require('borschik');
+var borschikSourceMap = require('./lib/borschik-source-map');
+var path = require('path');
 var stream = require('./lib/stream');
 var watcher = require('./lib/watcher');
 
-var createBorschikPreprocessor = function(args, config, logger, helper) {
+var createBorschikPreprocessor = function(args, config, logger, helper, basePath) {
     config = config || {};
     var log = logger.create('preprocessor.borschik');
     var defaultOptions = {
-        'comments': false,
+        'comments': true,
         'freeze': false,
         'minimize': false,
         'tech': 'js'
@@ -25,6 +27,22 @@ var createBorschikPreprocessor = function(args, config, logger, helper) {
         opts.output = output;
 
         output.on('data', function(data) {
+            var filePath = path.relative(basePath, file.originalPath, path.dirname(file.originalPath));
+            var sourceMap = JSON.parse(borschikSourceMap.generateSourceMap(filePath, data));
+
+            sourceMap.file = path.basename(file.path);
+            file.sourceMap = sourceMap;
+
+            /**
+             * Resolve path for dependencies
+             */
+            sourceMap.sources = sourceMap.sources.map(function(sourceFilePath) {
+                return path.resolve(path.dirname(file.originalPath), sourceFilePath);
+            });
+
+            var datauri = 'data:application/json;charset=utf-8;base64,' + new Buffer(JSON.stringify(sourceMap)).toString('base64');
+            data += '\n//@ sourceMappingURL=' + datauri + '\n';
+
             done(data);
         });
 
@@ -40,7 +58,7 @@ var createBorschikPreprocessor = function(args, config, logger, helper) {
     };
 };
 
-createBorschikPreprocessor.$inject = ['args', 'config.borschikPreprocessor', 'logger', 'helper'];
+createBorschikPreprocessor.$inject = ['args', 'config.borschikPreprocessor', 'logger', 'helper', 'config.basePath'];
 
 // PUBLISH DI MODULE
 module.exports = {
