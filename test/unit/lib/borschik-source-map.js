@@ -8,7 +8,7 @@ describe('borschik-source-map', function() {
             var that = this;
 
             expect(function() {
-                that.borschikSourceMap.getMapForIncludedFiles([]);
+                that.borschikSourceMap.getMapForIncludedFiles('main-builded.js', []);
             }).to.throws(/Error\(borschik source-map\): content should be string/);
         });
 
@@ -23,9 +23,19 @@ describe('borschik-source-map', function() {
                 'console.log("end");',
             ].join('\n');
 
-            var result = this.borschikSourceMap.getMapForIncludedFiles(content);
+            var result = this.borschikSourceMap.getMapForIncludedFiles('main-builded.js', content);
 
             expect(result).to.be.eql([{
+                fileName: 'main-builded.js',
+                position: {
+                    line: [
+                        [1, 1],
+                        [0, 0],
+                        [5, 1],
+                        [6, 2]
+                    ]
+                }
+            }, {
                 fileName: 'foo/bar.js',
                 position: {
                     line: [
@@ -52,9 +62,19 @@ describe('borschik-source-map', function() {
                 'console.log("end");',
             ].join('\n');
 
-            var result = this.borschikSourceMap.getMapForIncludedFiles(content);
+            var result = this.borschikSourceMap.getMapForIncludedFiles('main-builded.js', content);
 
             expect(result).to.be.eql([{
+                fileName: 'main-builded.js',
+                position: {
+                    line: [
+                        [1, 1],
+                        [0, 0],
+                        [11, 1],
+                        [12, 2]
+                    ]
+                }
+            }, {
                 fileName: 'foo/bar.js',
                 position: {
                     line: [
@@ -92,9 +112,9 @@ describe('borschik-source-map', function() {
             expect(result).to.be.eql({
                 "version": 3,
                 "file": "main-builded.js",
-                "sources": ["foo/bar.js"],
+                "sources": ["main-builded.js", "foo/bar.js"],
                 "names": [],
-                "mappings": ";;AAAA"
+                "mappings": "AAAA;AACA;ACDA;;;ADCA;AACA"
             });
         });
 
@@ -120,9 +140,9 @@ describe('borschik-source-map', function() {
             expect(result).to.be.eql({
                 "version": 3,
                 "file": "main-builded.js",
-                "sources": ["foo/bar.js", "foo/zoo.js"],
+                "sources": ["main-builded.js", "foo/bar.js", "foo/zoo.js"],
                 "names": [],
-                "mappings": ";;AAAA;AACA;ACDA;;;ADCA;AACA"
+                "mappings": "AAAA;AACA;ACDA;AACA;ACDA;;;ADCA;AACA;;;ADDA;AACA"
             });
         });
     });

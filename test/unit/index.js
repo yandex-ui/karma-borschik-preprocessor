@@ -34,7 +34,7 @@ describe('index', function() {
     it('it should process file with borschik include', function(done) {
         var borschik = this.createBorschikPreprocessor({}, null, new fake.Logger(), new fake.Helper(), '', [], {
             addFile: function() {}
-        });
+        }, []);
         var file = {
             originalPath: '/folder/main.js'
         };

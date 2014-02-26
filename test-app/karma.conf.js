@@ -9,11 +9,6 @@ module.exports = function(config) {
             // included files - tests
             {
                 pattern: 'test/*.js'
-            },{
-                pattern: '**/*.js',
-                served: true,
-                included: false,
-                watched: false
             }
         ],
 

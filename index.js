@@ -4,7 +4,16 @@ var path = require('path');
 var stream = require('./lib/stream');
 var watcher = require('./lib/watcher');
 
-var createBorschikPreprocessor = function(args, config, logger, helper, basePath) {
+var createPattern = function(path) {
+    return {
+        pattern: path,
+        included: false,
+        served: true,
+        watched: false
+    };
+};
+
+var createBorschikPreprocessor = function(args, config, logger, helper, basePath, fileList, files) {
     config = config || {};
     var log = logger.create('preprocessor.borschik');
     var defaultOptions = {
@@ -15,6 +24,7 @@ var createBorschikPreprocessor = function(args, config, logger, helper, basePath
     };
     var options = helper.merge(defaultOptions, args.options || {}, config.options || {});
     var watchers = {};
+    var servedFiles = {};
 
     return function(content, file, done) {
         var output = new stream.Writable();
@@ -26,8 +36,11 @@ var createBorschikPreprocessor = function(args, config, logger, helper, basePath
         opts.input = file.originalPath;
         opts.output = output;
 
+        // Builded file should not be served
+        servedFiles[file.originalPath] = true;
+
         output.on('data', function(data) {
-            var filePath = path.relative(basePath, file.originalPath, path.dirname(file.originalPath));
+            var filePath = path.relative(basePath, file.originalPath);
             var sourceMap = borschikSourceMap.generateSourceMap(filePath, data);
 
             sourceMap.file = path.basename(file.path);
@@ -40,6 +53,26 @@ var createBorschikPreprocessor = function(args, config, logger, helper, basePath
                 return path.resolve(path.dirname(file.originalPath), sourceFilePath);
             });
 
+            /**
+             * Serve files for source map
+             */
+            var needServeFiles = sourceMap.sources.filter(function(filePath) {
+                return !servedFiles[filePath];
+            });
+
+            if (needServeFiles.length) {
+                needServeFiles.forEach(function(filePath) {
+                    files.unshift(createPattern(filePath));
+                    fileList.addFile(filePath);
+                    servedFiles[filePath] = true;
+                });
+
+                fileList.refresh();
+            }
+
+            /**
+             * Add source map to builded file
+             */
             var datauri = 'data:application/json;charset=utf-8;base64,' + new Buffer(JSON.stringify(sourceMap)).toString('base64');
             data += '\n//@ sourceMappingURL=' + datauri + '\n';
 
@@ -58,7 +91,7 @@ var createBorschikPreprocessor = function(args, config, logger, helper, basePath
     };
 };
 
-createBorschikPreprocessor.$inject = ['args', 'config.borschikPreprocessor', 'logger', 'helper', 'config.basePath'];
+createBorschikPreprocessor.$inject = ['args', 'config.borschikPreprocessor', 'logger', 'helper', 'config.basePath', 'fileList', 'config.files'];
 
 // PUBLISH DI MODULE
 module.exports = {
