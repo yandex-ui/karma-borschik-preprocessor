@@ -25,10 +25,19 @@ var createBorschikPreprocessor = function(args, config, logger, helper, basePath
     var options = helper.merge(defaultOptions, args.options || {}, config.options || {});
     var watchers = {};
     var servedFiles = {};
+    var depFiles = {};
 
     return function(content, file, done) {
         var output = new stream.Writable();
         var result = null;
+
+        /**
+         * HACK(maksimrv):
+         * Does not process dependencies
+         */
+        if (depFiles[file.originalPath]) {
+            return done(content);
+        }
 
         log.debug('Processing "%s".', file.originalPath);
 
@@ -40,8 +49,8 @@ var createBorschikPreprocessor = function(args, config, logger, helper, basePath
         servedFiles[file.originalPath] = true;
 
         output.on('data', function(data) {
-            var filePath = path.relative(basePath, file.originalPath);
-            var sourceMap = borschikSourceMap.generateSourceMap(filePath, data);
+            var sourceMap = borschikSourceMap.generateSourceMap(path.relative(basePath, file.originalPath), data);
+            var rootDir = path.dirname(file.originalPath);
 
             sourceMap.file = path.basename(file.path);
             file.sourceMap = sourceMap;
@@ -50,7 +59,7 @@ var createBorschikPreprocessor = function(args, config, logger, helper, basePath
              * Resolve path for dependencies
              */
             sourceMap.sources = sourceMap.sources.map(function(sourceFilePath) {
-                return path.resolve(path.dirname(file.originalPath), sourceFilePath);
+                return path.resolve(rootDir, sourceFilePath);
             });
 
             /**
@@ -65,6 +74,7 @@ var createBorschikPreprocessor = function(args, config, logger, helper, basePath
                     files.unshift(createPattern(filePath));
                     fileList.addFile(filePath);
                     servedFiles[filePath] = true;
+                    depFiles[filePath] = true;
                 });
 
                 fileList.refresh();
