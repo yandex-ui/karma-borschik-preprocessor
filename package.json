@@ -1,6 +1,6 @@
 {
   "name": "karma-borschik-preprocessor",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "A Karma plugin. Build JavaScript files trhough borschik on the fly.",
   "main": "index.js",
   "scripts": {
