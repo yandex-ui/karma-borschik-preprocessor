@@ -13,7 +13,10 @@ describe 'index', ->
     content = fs.readFileSync(file.originalPath, 'utf8')
 
     _done = (data) ->
-      expect(data).to.be.equal 'console.log("Car.js");\n\n'
-      done()
+      done try
+        expect(data).to.be.equal 'console.log("Car.js");\n\n'
+        null
+      catch error
+        error
 
     borschik(content, file, _done)
